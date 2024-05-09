@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
-import setupCLI from './utilities/CLI-Handler.js';
+//import setupCLI from './utilities/CLI-Handler.js';
 //import { client } from './discordBot.js';
 import { getProfessors, getLibrary } from './scrapers/scraper.js';
 import { getProfessorDepartments } from './scrapers/getProfessorDepartments.js'; 
@@ -39,7 +39,7 @@ const app = express();
 app.use(express.json());
 
 app.use(cors({
-    origin: ['http://localhost:5173', '*'], 
+    origin: '*', 
     methods: ["GET", "POST", "PATCH", "DELETE"],
     allowedHeaders: 'Content-Type,Authorization'
   }));
