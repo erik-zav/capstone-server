@@ -3,12 +3,11 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-// Create an OpenAI instance with your API key
+// open ai key 
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
 });
 
-// Function to get AI responses
 export async function getAIResponse(userPrompt, systemPrompt) {
     const fullPrompt = systemPrompt + "\n\n" + userPrompt;
     
@@ -17,11 +16,9 @@ export async function getAIResponse(userPrompt, systemPrompt) {
             messages: [{ role: "system", content: systemPrompt }, { role: "user", content: userPrompt }],
             model: "gpt-3.5-turbo",
         });
-        console.log("API Response:", JSON.stringify(completion, null, 2)); // Log the entire response
-
-        // Accessing the 'content' of the 'message' from the first choice, then trim it
+        //console.log("API Response:", JSON.stringify(completion, null, 2)); 
         const responseText = completion.choices[0].message.content.trim();
-        console.log(responseText);
+        //console.log(responseText);
         
         return { aiResponse: responseText };
     } catch (error) {

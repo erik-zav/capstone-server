@@ -60,12 +60,12 @@ app.post('/api/openai-response', async (req, res) => {
     }
 
     try {
-        // Get the initial AI response to determine the action
+
         const initialResponse = await getAIResponse(req.body.prompt, systemPrompt);
-        // Use the AI response to determine and execute the appropriate function
         const finalResponse = await responseSelector(initialResponse.aiResponse, req.body.prompt);
-        // Send back the final response from the selected action
         res.json({ aiResponse: finalResponse });
+
+
     } catch (error) {
         console.error('Error processing AI response:', error);
         res.status(500).send({ message: 'Failed to process AI response', error: error.message });
@@ -131,7 +131,7 @@ app.get('/api/professors-by-department', async (req, res) => {
 
 //setupCLI(startBot, stopBot);
 
-// set port to localhost:3001
+
 const port = process.env.PORT || 3001;
 
 
