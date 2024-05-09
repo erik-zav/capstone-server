@@ -53,6 +53,8 @@ app.use(cors({
 
 //APIs
 app.post('/api/openai-response', async (req, res) => {
+    console.log('Received method:', req.method);
+    console.log('Headers:', req.headers);
     if (!req.body.prompt) {
         return res.status(400).send({ message: "Prompt is required." });
     }
