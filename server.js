@@ -8,7 +8,12 @@ import { getProfessorDepartments } from './scrapers/getProfessorDepartments.js';
 import { getAllProfessors, getProfessorsByDepartment } from './chat_commands/professorByDept.js';
 import { getAIResponse } from './LLMConnector.js'; 
 import { responseSelector } from './responseSelector.js';
+import { MongoClient } from 'mongodb';
 
+
+//environment variable storing monboDB connection string
+const uri = process.env.MONGO_DB_URI;
+const client = new MongoClient(uri);
 
 
 
@@ -51,6 +56,33 @@ app.use(cors({
 - Respond with '2' if the user's prompt mentions courses, or it is likely based on the prompt that the user is interested in course information.
 - Respond with '3' if neither of the above criteria are met.`;
 
+
+async function connectDB() {
+    try {
+        await client.connect();
+        console.log("Connected to MongoDB");
+    } catch (error) {
+        console.error("Could not connect to MongoDB", error);
+    }
+}
+
+connectDB();
+
+const db = client.db("chatbotDB");
+const trainingDataCollection = db.collection("TrainingData");
+const noCategoryPromptsCollection = db.collection("NoCategoryPrompts");
+
+// Add this function in your existing API server file
+async function saveData(initialResponse, userPrompt, finalResponse = null) {
+    const datetime = new Date().toISOString();
+    if (initialResponse == '3') {
+        await trainingDataCollection.insertOne({ prompt: userPrompt, response: finalResponse.aiResponse, datetime });
+    } else if (initialResponse !== '1' && initialResponse !== '2') {
+        await noCategoryPromptsCollection.insertOne({ prompt: userPrompt, datetime });
+    }
+}
+
+
 //APIs
 app.post('/api/openai-response', async (req, res) => {
     console.log('Received method:', req.method);
@@ -63,6 +95,9 @@ app.post('/api/openai-response', async (req, res) => {
 
         const initialResponse = await getAIResponse(req.body.prompt, systemPrompt);
         const finalResponse = await responseSelector(initialResponse.aiResponse, req.body.prompt);
+
+        await saveData(initialResponse.aiResponse, req.body.prompt, finalResponse);
+
         res.json({ aiResponse: finalResponse });
 
 
