@@ -9,7 +9,7 @@ async function handleProfessorsLookup() {
 
 //AI returns '2'
 function handleCoursesLookup() {
-    return "Course look up function here";
+    return "Course look-up feature coming soon!";
 }
 
 //AI returns '3'
